@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.14)
+project(1605070)
+
+set(OpenGlLinkers -lglut -lGLU -lGL)
+
+add_executable(1605070 main.cpp CameraHandler.cpp CameraHandler.h)
+target_link_libraries(1605070 ${OpenGlLinkers})
