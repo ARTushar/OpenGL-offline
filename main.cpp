@@ -4,13 +4,16 @@
 #include <GL/glut.h>
 #include "CameraHandler.h"
 
-#define pi (2*acos(0.0))
 
 double cameraHeight;
 double cameraAngle;
 int drawgrid;
 int drawaxes;
 double angle;
+
+struct point {
+  double x, y, z;
+};
 
 
 // variables for controlling camera
@@ -197,9 +200,23 @@ void keyboardListener(unsigned char key, int x,int y){
   switch(key){
 
     case '1':
-      drawgrid=1-drawgrid;
+      ch.look_left();
       break;
-
+    case '2':
+      ch.look_right();
+      break;
+    case '3':
+      ch.look_up();
+      break;
+    case '4':
+      ch.look_down();
+      break;
+    case '5':
+      ch.tilt_c();
+      break;
+    case '6':
+      ch.tilt_cc();
+      break;
     default:
       break;
   }
@@ -209,22 +226,22 @@ void keyboardListener(unsigned char key, int x,int y){
 void specialKeyListener(int key, int x,int y){
   switch(key){
     case GLUT_KEY_DOWN:		//down arrow key
-      cameraHeight -= 3.0;
+      ch.move_backward();
       break;
     case GLUT_KEY_UP:		// up arrow key
-      cameraHeight += 3.0;
+      ch.move_forward();
       break;
-
     case GLUT_KEY_RIGHT:
-      cameraAngle += 0.03;
+      ch.move_right();
       break;
     case GLUT_KEY_LEFT:
-      cameraAngle -= 0.03;
+      ch.move_left();
       break;
-
     case GLUT_KEY_PAGE_UP:
+      ch.move_up();
       break;
     case GLUT_KEY_PAGE_DOWN:
+      ch.move_down();
       break;
 
     case GLUT_KEY_INSERT:
