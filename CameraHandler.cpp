@@ -22,27 +22,27 @@ CameraHandler::CameraHandler(Point pos, Point l, Point u, Point r, double step, 
 }
 
 void CameraHandler::move_forward() {
-  position.x += step;
+  position = position + look * step;
 }
 
 void CameraHandler::move_backward() {
-  position.x -= step;
+  position = position - look * step;
 }
 
 void CameraHandler::move_right() {
-  position.y += step;
+  position = position +  right * step;
 }
 
 void CameraHandler::move_left() {
-  position.y -= step;
+  position = position -  right * step;
 }
 
 void CameraHandler::move_up() {
-  position.z += step;
+  position = position + up * step;
 }
 
 void CameraHandler::move_down() {
-  position.z -= step;
+  position = position - up * step;
 }
 
 void CameraHandler::look_left() {
