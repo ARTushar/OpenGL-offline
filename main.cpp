@@ -325,13 +325,13 @@ void display(){
   //glColor3f(1,0,0);
   //drawSquare(10);
 
-  drawSS();
+//  drawSS();
 
   //drawCircle(30,24);
 
   //drawCone(20,50,24);
 
-  //drawSphere(30,24,20);
+  drawSphere(30,24,20);
 
 
 
