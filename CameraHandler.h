@@ -2,28 +2,13 @@
 // Created by tushar on 3/12/21.
 //
 #include <string>
+#include "Point.h"
 
 #ifndef INC_1605070_CAMERAHANDLER_H
 #define INC_1605070_CAMERAHANDLER_H
-#define pi (2*acos(0.0))
 
 
-class Point{
-public:
-    double x, y, z;
-    Point(){}
-    Point(double x, double y, double z) : x(x), y(y), z(z){}
-    Point operator * (double a) {
-      return {x*a, y*a, z*a};
-    }
-    Point operator + (Point a) {
-      return {x + a.x, y + a.y, z + a.z};
-    }
-    Point operator - (Point a) {
-      return {x - a.x, y - a.y, z - a.z};
-    }
 
-};
 
 class CameraHandler {
 private:

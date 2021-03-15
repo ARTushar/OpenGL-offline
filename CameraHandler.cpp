@@ -4,14 +4,14 @@
 
 #include <cmath>
 #include "CameraHandler.h"
-
+#include "constants.h"
 
 CameraHandler::CameraHandler() {
-  position = {100, 100, 0};
+  position = {0, -200, 0};
   up = {0, 0, 1};
   double val = 1/sqrt(2);
-  right = {-val, val, 0};
-  look = {-val, -val, 0};
+  right = {1, 0, 0};
+  look = {0, 1, 0};
   step = 2;
   angle = 3;
 }

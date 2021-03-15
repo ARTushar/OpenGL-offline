@@ -7,7 +7,25 @@
 
 
 class Gun {
-
+private:
+    double sphereRadius;
+    double cylinderCapRadius;
+    double cylinderCapDistance;
+    double cylinderHeight;
+    double quarterRadius ;
+    double planeDistance;
+    double planeDistanceFromOrigin;
+    double maxRotateAngle;
+    double gunLength;
+    double stepAngle;
+    int totalStepsLeft, totalStepsUp;
+public:
+    Gun();
+    void drawGun();
+    void rotateLeft();
+    void rotateRight();
+    void rotateUp();
+    void rotateDown();
 };
 
 
