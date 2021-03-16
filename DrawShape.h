@@ -14,6 +14,8 @@ public:
     static void drawAxes(double length);
     static void drawPlane(Point center, double width, double height);
     static void drawSquare(Point position, double length, Point color);
+    static void drawSquareXY(Point position, double length, Point color);
+    static void drawCircleXY(Point position, double radius, Point color);
 };
 
 

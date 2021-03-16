@@ -6,11 +6,19 @@
 #define INC_1605070_POINT_H
 
 
+#include <cmath>
+
 class Point{
 public:
     double x, y, z;
     Point(){}
     Point(double x, double y, double z) : x(x), y(y), z(z){}
+    double dot(const Point & rhs) {
+      return x * rhs.x + y * rhs.y + z * rhs.z;
+    }
+    double distance(const Point & rhs) {
+      return sqrt(pow(x-rhs.x, 2) + pow(y-rhs.y, 2) + pow(z-rhs.z, 2));
+    }
     Point operator * (double a) {
       return {x*a, y*a, z*a};
     }

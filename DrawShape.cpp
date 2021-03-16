@@ -160,3 +160,43 @@ void DrawShape::drawSquare(Point position, double length, Point color) {
     glVertex3f( position.x-2, position.y - length / 2, position.z + length / 2);
   }glEnd();
 }
+
+void DrawShape::drawSquareXY(Point position, double length, Point color) {
+  glColor3f(color.x, color.y, color.z);
+  glBegin(GL_LINES);{
+    glVertex3f(position.x + length / 2, position.y + length / 2, position.z);
+    glVertex3f(position.x + length / 2, position.y - length / 2, position.z);
+
+    glVertex3f(position.x - length / 2, position.y - length / 2, position.z);
+    glVertex3f(position.x - length / 2, position.y + length / 2, position.z);
+
+    glVertex3f(position.x + length / 2, position.y - length / 2, position.z);
+    glVertex3f(position.x - length / 2, position.y - length / 2, position.z);
+
+    glVertex3f(position.x + length / 2, position.y + length / 2, position.z);
+    glVertex3f(position.x - length / 2, position.y + length / 2, position.z);
+  }glEnd();
+}
+
+void DrawShape::drawCircleXY(Point position, double radius, Point color) {
+  int i;
+  int segments = 50;
+  Point points[100];
+  glColor3f(color.x, color.y, color.z);
+  //generate points
+  for(i=0;i<=segments; i++)
+  {
+    points[i].x = position.x + radius * cos(((double)i/(double)segments)*2*pi);
+    points[i].y = position.y + radius * sin(((double)i/(double)segments)*2*pi);
+  }
+  //draw segments using generated points
+  for(i=0;i<segments;i++)
+  {
+    glBegin(GL_LINES);
+    {
+      glVertex3f(points[i].x,points[i].y, position.z);
+      glVertex3f(points[i+1].x,points[i+1].y, position.z);
+    }
+    glEnd();
+  }
+}
