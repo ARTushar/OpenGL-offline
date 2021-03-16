@@ -6,6 +6,9 @@
 #define INC_1605070_GUN_H
 
 
+#include "Point.h"
+#include <vector>
+
 class Gun {
 private:
     double sphereRadius;
@@ -14,11 +17,16 @@ private:
     double cylinderHeight;
     double quarterRadius ;
     double planeDistance;
+    double planeWidth, planeHeight;
     double planeDistanceFromOrigin;
     double maxRotateAngle;
-    double gunLength;
+    double bulletLength;
     double stepAngle;
-    int totalStepsLeft, totalStepsUp;
+    int totalStepsLeft, totalStepsUp, totalStepsCylinderUp, totalStepsCylinderLeft;
+    Point bulletCurrentPosition;
+    std::vector<Point> bullets;
+
+    void drawAllBullets();
 public:
     Gun();
     void drawGun();
@@ -26,6 +34,11 @@ public:
     void rotateRight();
     void rotateUp();
     void rotateDown();
+    void rotateCylinderUp();
+    void rotateCylinderDown();
+    void tiltCylinderLeft();
+    void tiltCylinderRight();
+    void fireBullet();
 };
 
 

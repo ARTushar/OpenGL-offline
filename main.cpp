@@ -86,6 +86,18 @@ void keyboardListener(unsigned char key, int x,int y){
     case 'r':
       gun.rotateDown();
       break;
+    case 'a':
+      gun.rotateCylinderUp();
+      break;
+    case 's':
+      gun.rotateCylinderDown();
+      break;
+    case 'd':
+      gun.tiltCylinderLeft();
+      break;
+    case 'f':
+      gun.tiltCylinderRight();
+      break;
     default:
       break;
   }
@@ -132,6 +144,7 @@ void mouseListener(int button, int state, int x, int y){	//x, y is the x-y of th
     case GLUT_LEFT_BUTTON:
       if(state == GLUT_DOWN){		// 2 times?? in ONE click? -- solution is checking DOWN or UP
 //        drawaxes=1-drawaxes;
+        gun.fireBullet();
       }
       break;
 

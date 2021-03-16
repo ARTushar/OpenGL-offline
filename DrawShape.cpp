@@ -7,38 +7,49 @@
 #include "constants.h"
 #include <cmath>
 
+
 void DrawShape::drawCylinder(double radius, int slices, int stacks, double height, double arcRadius) {
   Point points[350][350];
   int i,j;
   double h, r;
   double totalAngle = 2*pi;
   double offsetAngle = 0;
-  //generate circle in yz plane
-  for(j=0;j<=slices;j++)
-  {
-    points[0][j].y=radius*cos(offsetAngle + ((double)j/(double)slices)*totalAngle);
-    points[0][j].z=radius*sin(offsetAngle + ((double)j/(double)slices)*totalAngle);
-    points[0][j].x=0;
-  }
+
   int done = 0;
+
+//   generate cylinder left cap
+  int totalStacksLeft = stacks / 4;
+  for(i=0; i <= totalStacksLeft; i++)
+  {
+    h = radius - radius*cos(((double)i/(double)totalStacksLeft)*(pi/2));
+    r= radius*sin(((double)i/(double)totalStacksLeft)*(pi/2));
+    for(j=0;j<=slices;j++)
+    {
+      points[done][j].y=r*cos(((double)j/(double)slices)*totalAngle);
+      points[done][j].z=r*sin(((double)j/(double)slices)*totalAngle);
+      points[done][j].x=h;
+    }
+    done++;
+  }
+
   for(i=1; i <= stacks; i++)
   {
-    h = i * height / stacks;
-    for(int j = 0; j < slices; j++) {
-      points[i][j].x = h;
-      points[i][j].y = points[i-1][j].y;
-      points[i][j].z = points[i-1][j].z;
+    h = radius + i * height / stacks;
+    for(int j = 0; j <= slices; j++) {
+      points[done][j].x = h;
+      points[done][j].y = points[done-1][j].y;
+      points[done][j].z = points[done-1][j].z;
     }
     done++;
   }
 
   int newStacks = stacks / 4;
 
-  // cylinderExtensionCircles
-  for(i = 0; i <= newStacks;i++)
+//   cylinderExtensionCircles
+  for(i = 1; i <= newStacks;i++)
   {
-    r = radius + arcRadius - arcRadius *cos(((double)i/(double)newStacks)*(pi/2));
-    h = height + i * arcRadius / newStacks;
+    r = radius + arcRadius - arcRadius * cos(((double)i/(double)newStacks)*(pi/2));
+    h = radius + height + arcRadius * sin(((double)i/(double)newStacks)*(pi/2));
     for(j=0;j<=slices;j++)
     {
       points[done][j].y=r * cos(((double)j/(double)slices)*totalAngle);
@@ -50,9 +61,9 @@ void DrawShape::drawCylinder(double radius, int slices, int stacks, double heigh
 
   //draw quads using generated points
   int toggle = 0;
-  for(i=0;i<stacks + newStacks;i++)
+  for(i=0;i<done-1;i++)
   {
-    glColor3f((double)i/(double)stacks,(double)i/(double)stacks,(double)i/(double)stacks);
+//    glColor3f((double)i/(double)stacks,(double)i/(double)stacks,(double)i/(double)stacks);
     for(j=0;j<slices;j++)
     {
       glColor3f(1-toggle, 1-toggle, 1-toggle);
@@ -78,33 +89,6 @@ void DrawShape::drawPlane(Point center, double width, double height) {
 
 }
 
-void DrawShape::drawBullet(double length) {
-
-}
-
-
-void DrawShape::drawCircle(double radius, int segments) {
-  int i;
-  Point points[100];
-  glColor3f(0.7,0.7,0.7);
-  //generate points
-  for(i=0;i<=segments;i++)
-  {
-    points[i].x=radius*cos(((double)i/(double)segments)*2*pi);
-    points[i].y=radius*sin(((double)i/(double)segments)*2*pi);
-  }
-  //draw segments using generated points
-  for(i=0;i<segments;i++)
-  {
-    glBegin(GL_LINES);
-    {
-      glVertex3f(points[i].x,points[i].y,0);
-      glVertex3f(points[i+1].x,points[i+1].y,0);
-    }
-    glEnd();
-  }
-}
-
 void DrawShape::drawSphere(double radius, int slices, int stacks, int dir) {
   Point points[200][200];
   int i,j;
@@ -125,7 +109,7 @@ void DrawShape::drawSphere(double radius, int slices, int stacks, int dir) {
   int toggle = 0;
   for(i=0;i<stacks;i++)
   {
-    glColor3f((double)i/(double)stacks,(double)i/(double)stacks,(double)i/(double)stacks);
+//    glColor3f((double)i/(double)stacks,(double)i/(double)stacks,(double)i/(double)stacks);
     for(j=0;j<slices;j++)
     {
       glColor3f(1-toggle, 1-toggle, 1-toggle);
@@ -166,88 +150,13 @@ void DrawShape::drawAxes(double length) {
   }glEnd();
 }
 
-void DrawShape::drawGrid() {
-  int i;
-  glColor3f(0.6, 0.6, 0.6);  //grey
-  glBegin(GL_LINES);
-  {
-    for (i = -8; i <= 8; i++) {
 
-      if (i == 0)
-        continue;  //SKIP the MAIN axes
-
-      //lines parallel to Y-axis
-      glVertex3f(i * 10, -90, 0);
-      glVertex3f(i * 10, 90, 0);
-
-      //lines parallel to X-axis
-      glVertex3f(-90, i * 10, 0);
-      glVertex3f(90, i * 10, 0);
-    }
-
-  }
-
-}
-
-void DrawShape::drawSquare(double length, Point color) {
+void DrawShape::drawSquare(Point position, double length, Point color) {
   glColor3f(color.x, color.y, color.z);
   glBegin(GL_QUADS);{
-    glVertex3f( length, length, 2);
-    glVertex3f( length, -length, 2);
-    glVertex3f(-length, -length, 2);
-    glVertex3f(-length, length, 2);
+    glVertex3f( position.x-2, position.y + length / 2, position.z + length / 2);
+    glVertex3f( position.x-2, position.y + length / 2, position.z - length / 2);
+    glVertex3f( position.x-2, position.y - length / 2, position.z - length / 2);
+    glVertex3f( position.x-2, position.y - length / 2, position.z + length / 2);
   }glEnd();
-}
-
-void DrawShape::drawCone(double radius, double height, int segments) {
-  int i;
-  double shade;
-  Point points[100];
-  //generate points
-  for(i=0;i<=segments;i++)
-  {
-    points[i].x=radius*cos(((double)i/(double)segments)*2*pi);
-    points[i].y=radius*sin(((double)i/(double)segments)*2*pi);
-  }
-  //draw triangles using generated points
-  for(i=0;i<segments;i++)
-  {
-    //create shading effect
-    if(i<segments/2)shade=2*(double)i/(double)segments;
-    else shade=2*(1.0-(double)i/(double)segments);
-    glColor3f(shade,shade,shade);
-
-    glBegin(GL_TRIANGLES);
-    {
-      glVertex3f(0,0,height);
-      glVertex3f(points[i].x,points[i].y,0);
-      glVertex3f(points[i+1].x,points[i+1].y,0);
-    }
-    glEnd();
-  }
-}
-
-void DrawShape::drawQuarterCircleXY(double radius, double len, int segments, Point color) {
-  int i;
-  Point points[200];
-  //generate points
-  for(i=0;i<=segments;i++)
-  {
-    points[i].x=radius*cos(((double)i/(double)segments)*pi/2);
-    points[i].y=radius*sin(((double)i/(double)segments)*pi/2);
-  }
-  //draw segments using generated points
-  for(i=0;i<segments;i++)
-  {
-    glColor3f(color.x, color.y, color.z);
-    glBegin(GL_QUADS);
-    {
-      glVertex3f(points[i].x, points[i].y, len);
-      glVertex3f(points[i+1].x, points[i+1].y, len);
-      glVertex3f(points[i+1].x, points[i+1].y, -len);
-      glVertex3f(points[i].x, points[i].y, -len);
-    }
-    glEnd();
-  }
-
 }

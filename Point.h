@@ -20,6 +20,40 @@ public:
     Point operator - (Point a) {
       return {x - a.x, y - a.y, z - a.z};
     }
+
+    bool operator<(const Point &rhs) const {
+      if (x < rhs.x)
+        return true;
+      if (rhs.x < x)
+        return false;
+      if (y < rhs.y)
+        return true;
+      if (rhs.y < y)
+        return false;
+      return z < rhs.z;
+    }
+
+    bool operator>(const Point &rhs) const {
+      return rhs < *this;
+    }
+
+    bool operator<=(const Point &rhs) const {
+      return !(rhs < *this);
+    }
+
+    bool operator>=(const Point &rhs) const {
+      return !(*this < rhs);
+    }
+
+    bool operator==(const Point &rhs) const {
+      return x == rhs.x &&
+             y == rhs.y &&
+             z == rhs.z;
+    }
+
+    bool operator!=(const Point &rhs) const {
+      return !(rhs == *this);
+    }
 };
 
 
