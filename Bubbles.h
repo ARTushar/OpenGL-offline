@@ -13,8 +13,9 @@ class Bubble {
 public:
     Point position;
     Point velocity;
-    bool startMoving;
-    bool insideCircle;
+    bool startMoving = false;
+    bool insideCircle = false;
+    std::vector<int> overlappedCirlces;
     Bubble();
     Bubble(Point pos, Point vel);
     void updateVelocity(Point vel);
@@ -58,6 +59,14 @@ public:
     bool checkOutsideCircle(Point pos);
 
     Point getCircleNormalVector(Point pos);
+
+    bool checkBubbleBubbleIntersection(int i, int j);
+
+    Point getBubbleBubbleNormalVector(int i, int j);
+
+    bool checkOverlapped(int i);
+
+    void checkNotOverlapped(int i);
 };
 
 

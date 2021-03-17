@@ -3,6 +3,7 @@
 //
 
 #include <cmath>
+#include <algorithm>
 #include "Bubbles.h"
 #include "DrawShape.h"
 
@@ -83,27 +84,44 @@ void Bubbles::updateBubblesPosition() {
 }
 
 void Bubbles::checkBoundaryIntersection() {
-  for(auto & bubble : bubbles) {
-    if(!bubble.insideCircle){
-      if(bubble.position.x + bubbleRadius > squareLength){
-        bubble.reflectDirection({-1, 0, 0});
+  for(int i = 0; i < numberOfBubbles; i++) {
+    if(!bubbles[i].insideCircle){
+      if(bubbles[i].position.x + bubbleRadius > squareLength){
+        bubbles[i].reflectDirection({-1, 0, 0});
       }
-      if(bubble.position.x - bubbleRadius < 0){
-        bubble.reflectDirection({1, 0, 0});
+      if(bubbles[i].position.x - bubbleRadius < 0){
+        bubbles[i].reflectDirection({1, 0, 0});
       }
-      if(bubble.position.y + bubbleRadius > squareLength){
-        bubble.reflectDirection({0, -1, 0});
+      if(bubbles[i].position.y + bubbleRadius > squareLength){
+        bubbles[i].reflectDirection({0, -1, 0});
       }
-      if(bubble.position.y - bubbleRadius < 0){
-        bubble.reflectDirection({0, 1, 0});
+      if(bubbles[i].position.y - bubbleRadius < 0){
+        bubbles[i].reflectDirection({0, 1, 0});
       }
-      if(checkInsideCircle(bubble.position)) {
-        bubble.insideCircle = true;
+      if(checkInsideCircle(bubbles[i].position)) {
+        bubbles[i].insideCircle = true;
         printf("yo inside the circle!\n");
+        if(checkOverlapped(i)) {
+        }
       }
-    } else if(checkOutsideCircle(bubble.position)){
-      Point normal = getCircleNormalVector(bubble.position);
-      bubble.reflectDirection(normal);
+    } else {
+      for(int j = 0; j < numberOfBubbles; j++) {
+        if(j == i ||
+           std::find(bubbles[i].overlappedCirlces.begin(), bubbles[i].overlappedCirlces.end(), j) != bubbles[i].overlappedCirlces.end()) {
+          continue;
+        }
+        if(checkBubbleBubbleIntersection(i, j)){
+          Point normal = getBubbleBubbleNormalVector(i, j);
+          bubbles[i].reflectDirection(normal);
+        }
+      }
+
+      if(checkOutsideCircle(bubbles[i].position)){
+        Point normal = getCircleNormalVector(bubbles[i].position);
+        bubbles[i].reflectDirection(normal);
+      }
+
+      checkNotOverlapped(i);
     }
   }
 }
@@ -114,7 +132,7 @@ Point Bubble::convert_to_unit(Point &a) {
   return  {a.x / val, a.y / val, a.z / val};
 }
 
-Bubble::Bubble(Point pos, Point vel) : position(pos), velocity(vel), startMoving(false), insideCircle(false){}
+Bubble::Bubble(Point pos, Point vel) : position(pos), velocity(vel){}
 
 void Bubble::updateVelocity(const Point vel) {
   velocity = vel;
@@ -124,7 +142,7 @@ void Bubble::updatePosition(double speed) {
   position = position + velocity * speed;
 }
 
-Bubble::Bubble() : position({0, 0, 0}), velocity({0, 0, 0}), startMoving(false), insideCircle(false){}
+Bubble::Bubble() : position({0, 0, 0}), velocity({0, 0, 0}){}
 
 void Bubble::draw(double radius) {
   DrawShape::drawCircleXY(position, radius, {1, 1, 0 });
@@ -146,9 +164,42 @@ bool Bubbles::checkOutsideCircle(Point pos) {
   return pos.distance({squareLength/2, squareLength/2, 0}) + bubbleRadius > bigCircleRadius;
 }
 
+bool Bubbles::checkBubbleBubbleIntersection(int i, int j) {
+  return bubbles[i].position.distance(bubbles[j].position) <= 2 * bubbleRadius;
+}
+
 Point Bubbles::getCircleNormalVector(Point pos) {
   Point normal = {squareLength / 2, squareLength / 2, 0};
   normal = normal - pos;
   normal = Bubble::convert_to_unit(normal);
   return normal;
+}
+
+Point Bubbles::getBubbleBubbleNormalVector(int i, int j) {
+  Point normal = bubbles[i].position - bubbles[j].position;
+  normal = Bubble::convert_to_unit(normal);
+  return normal;
+}
+
+bool Bubbles::checkOverlapped(int i) {
+  bool overlapped = false;
+  for(int j = 0; j < numberOfBubbles; j++) {
+    if (i == j) continue;
+    if(checkBubbleBubbleIntersection(i, j)){
+      printf("overlapped! %d %d\n", i, j);
+      bubbles[i].overlappedCirlces.push_back(j);
+      overlapped = true;
+    }
+  }
+  return overlapped;
+}
+
+void Bubbles::checkNotOverlapped(int i) {
+  bubbles[i].overlappedCirlces;
+  for(int j = 0; j < bubbles[i].overlappedCirlces.size(); j++) {
+    if(!checkBubbleBubbleIntersection(i, bubbles[i].overlappedCirlces[j])){
+      printf("not overlapped! %d %d\n", i, bubbles[i].overlappedCirlces[j]);
+      bubbles[i].overlappedCirlces.erase(bubbles[i].overlappedCirlces.begin() + j);
+    }
+  }
 }
