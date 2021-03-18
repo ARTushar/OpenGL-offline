@@ -12,8 +12,8 @@ Bubbles::Bubbles() {
   bigCircleRadius = 60;
   squareLength = 200;
   assignInitialBubbles();
-  speed = 0.1;
-  minSpeed = 0.1;
+  speed = 1.1;
+  minSpeed = 1.1;
   maxSpeed = 2.5;
   step = 0.1;
   bubblesMoving = true;
@@ -80,6 +80,7 @@ void Bubbles::updateBubblesPosition() {
         bubble.updatePosition(speed);
       }
     }
+    fixReflectionIssues();
   }
 }
 
@@ -139,6 +140,7 @@ void Bubble::updateVelocity(const Point vel) {
 }
 
 void Bubble::updatePosition(double speed) {
+  prevPosition = position;
   position = position + velocity * speed;
 }
 
@@ -203,3 +205,33 @@ void Bubbles::checkNotOverlapped(int i) {
     }
   }
 }
+
+bool Bubbles::containBubbles(int i, int j) {
+  return std::find(bubbles[i].overlappedCirlces.begin(), bubbles[i].overlappedCirlces.end(), j) != bubbles[i].overlappedCirlces.end();
+}
+
+
+void Bubbles::fixReflectionIssues() {
+  std::vector<Bubble> copyBubbles = bubbles;
+
+  for(int i = 0; i < numberOfBubbles; i++) {
+    if(!copyBubbles[i].insideCircle) continue;
+
+    if(checkOutsideCircle(copyBubbles[i].position)) {
+      bubbles[i].position = bubbles[i].prevPosition;
+      bubbles[i].reflectDirection(getCircleNormalVector(bubbles[i].position));
+      bubbles[i].position = bubbles[i].position + bubbles[i].velocity * speed;
+    }
+
+    for(int j = 0; j < numberOfBubbles; j++) {
+      if(i == j) continue;
+      if(containBubbles(i, j)) continue;
+      if(copyBubbles[i].position.distance(copyBubbles[j].position) < 2 * bubbleRadius) {
+        bubbles[i].position = bubbles[i].prevPosition;
+        bubbles[i].reflectDirection(getBubbleBubbleNormalVector(i, j));
+        bubbles[i].position = bubbles[i].position + bubbles[i].velocity * speed;
+      }
+    }
+  }
+}
+

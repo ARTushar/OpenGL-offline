@@ -12,6 +12,7 @@
 class Bubble {
 public:
     Point position;
+    Point prevPosition;
     Point velocity;
     bool startMoving = false;
     bool insideCircle = false;
@@ -67,6 +68,12 @@ public:
     bool checkOverlapped(int i);
 
     void checkNotOverlapped(int i);
+
+    void fixReflectionIssues();
+
+    bool containBubbles(int i, int j);
+
+    bool checkCollision(int i);
 };
 
 
