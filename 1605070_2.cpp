@@ -154,6 +154,7 @@ void DrawShape::drawCircleXY(Point position, double radius, Point color) {
 class Bubble {
 public:
     Point position;
+    Point prevPosition;
     Point velocity;
     bool startMoving = false;
     bool insideCircle = false;
@@ -209,6 +210,10 @@ public:
     bool checkOverlapped(int i);
 
     void checkNotOverlapped(int i);
+
+    void fixReflectionIssues();
+
+    bool containBubbles(int i, int j);
 };
 
 Bubbles::Bubbles() {
@@ -284,6 +289,7 @@ void Bubbles::updateBubblesPosition() {
         bubble.updatePosition(speed);
       }
     }
+    fixReflectionIssues();
   }
 }
 
@@ -343,6 +349,7 @@ void Bubble::updateVelocity(const Point vel) {
 }
 
 void Bubble::updatePosition(double speed) {
+  prevPosition = position;
   position = position + velocity * speed;
 }
 
@@ -404,6 +411,35 @@ void Bubbles::checkNotOverlapped(int i) {
     if(!checkBubbleBubbleIntersection(i, bubbles[i].overlappedCirlces[j])){
       printf("not overlapped! %d %d\n", i, bubbles[i].overlappedCirlces[j]);
       bubbles[i].overlappedCirlces.erase(bubbles[i].overlappedCirlces.begin() + j);
+    }
+  }
+}
+
+bool Bubbles::containBubbles(int i, int j) {
+  return std::find(bubbles[i].overlappedCirlces.begin(), bubbles[i].overlappedCirlces.end(), j) != bubbles[i].overlappedCirlces.end();
+}
+
+
+void Bubbles::fixReflectionIssues() {
+  std::vector<Bubble> copyBubbles = bubbles;
+
+  for(int i = 0; i < numberOfBubbles; i++) {
+    if(!copyBubbles[i].insideCircle) continue;
+
+    if(checkOutsideCircle(copyBubbles[i].position)) {
+      bubbles[i].position = bubbles[i].prevPosition;
+      bubbles[i].reflectDirection(getCircleNormalVector(bubbles[i].position));
+      bubbles[i].position = bubbles[i].position + bubbles[i].velocity * speed;
+    }
+
+    for(int j = 0; j < numberOfBubbles; j++) {
+      if(i == j) continue;
+      if(containBubbles(i, j)) continue;
+      if(copyBubbles[i].position.distance(copyBubbles[j].position) < 2 * bubbleRadius) {
+        bubbles[i].position = bubbles[i].prevPosition;
+        bubbles[i].reflectDirection(getBubbleBubbleNormalVector(i, j));
+        bubbles[i].position = bubbles[i].position + bubbles[i].velocity * speed;
+      }
     }
   }
 }
